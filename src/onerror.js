@@ -14,15 +14,17 @@ template.onerror = function (e) {
     }
 };
 
+template.errorHandler = function () {
+    return '{Template Error}';
+};
+
 
 // 模板调试器
 var showDebugInfo = function (e) {
 
     template.onerror(e);
     
-    return function () {
-        return '{Template Error}';
-    };
+    return template.errorHandler;
 };
 
 
