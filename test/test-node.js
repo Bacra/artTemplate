@@ -32,12 +32,15 @@ var data = {
 };
 
 var render = template('tpl/index');
-
 var html = render(data);
+
+require('fs').writeFileSync(__dirname+'/tpl/index.tpl.js', 'module.exports = '+render.toString());
+var render2 = template.compile(require('./tpl/index.tpl.js'));
 
 
 console.time('test');
 for (var i = 0; i < 999999; i ++) {
-	render(data)
+	render(data);
+	render2(data);
 }
 console.timeEnd('test');

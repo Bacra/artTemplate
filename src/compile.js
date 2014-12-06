@@ -28,20 +28,26 @@ var compile = template.compile = function (source, options) {
 
 
     var filename = options.filename;
+	var Render;
 
+	if (typeof source == 'function') {
+		Render = source;
+		Render.prototype = utils;
+	} else {
 
-    try {
-        
-        var Render = compiler(source, options);
-        
-    } catch (e) {
-    
-        e.filename = filename || 'anonymous';
-        e.name = 'Syntax Error';
+		try {
 
-        return showDebugInfo(e);
-        
-    }
+			Render = compiler(source, options);
+
+		} catch (e) {
+
+			e.filename = filename || 'anonymous';
+			e.name = 'Syntax Error';
+
+			return showDebugInfo(e);
+
+		}
+	}
     
     
     // 对编译结果进行一次包装
