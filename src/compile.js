@@ -143,14 +143,20 @@ function stringify (code) {
     .replace(/\n/g, '\\n') + "'";
 }
 
+var tagCache = {};
+var tagRegCache = {};
+var tagReg = /([()\\|$\^*?.+\[\]\{\}\/])/g;
 function tagRegExp (tag) {
+	if (tag.__reg__ && tagRegCache[tag.__reg__]) return tagRegCache[tag.__reg__];
 
     var tmp = [];
     forEach(tag, function(val, index) {
-        tmp[index] = val.replace(/([()\\|$\^*?.+\[\]\{\}\/])/g, '\\$1');
+        tmp[index] = tagCache[val] || (tagCache[val] = val.replace(tagReg, '\\$1'));
     });
 
-    return new RegExp(tmp.join('|'), 'g')
+	var reg = tmp.join('|');
+	tag.__reg__ = reg;
+    return tagRegCache[reg] || (tagRegCache[reg] = new RegExp(reg, 'g'));
 }
 
 
