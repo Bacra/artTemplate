@@ -28,20 +28,26 @@ var compile = template.compile = function (source, options) {
 
 
     var filename = options.filename;
+	var Render;
 
+	if (typeof source == 'function') {
+		Render = source;
+		Render.prototype = utils;
+	} else {
 
-    try {
-        
-        var Render = compiler(source, options);
-        
-    } catch (e) {
-    
-        e.filename = filename || 'anonymous';
-        e.name = 'Syntax Error';
+		try {
 
-        return showDebugInfo(e);
-        
-    }
+			Render = compiler(source, options);
+
+		} catch (e) {
+
+			e.filename = filename || 'anonymous';
+			e.name = 'Syntax Error';
+
+			return showDebugInfo(e);
+
+		}
+	}
     
     
     // 对编译结果进行一次包装
@@ -137,14 +143,20 @@ function stringify (code) {
     .replace(/\n/g, '\\n') + "'";
 }
 
+var tagCache = {};
+var tagRegCache = {};
+var tagReg = /([()\\|$\^*?.+\[\]\{\}\/])/g;
 function tagRegExp (tag) {
+	if (tag.__reg__ && tagRegCache[tag.__reg__]) return tagRegCache[tag.__reg__];
 
     var tmp = [];
     forEach(tag, function(val, index) {
-        tmp[index] = val.replace(/([()\\|$\^*?.+\[\]\{\}\/])/g, '\\$1');
+        tmp[index] = tagCache[val] || (tagCache[val] = val.replace(tagReg, '\\$1'));
     });
 
-    return new RegExp(tmp.join('|'), 'g')
+	var reg = tmp.join('|');
+	tag.__reg__ = reg;
+    return tagRegCache[reg] || (tagRegCache[reg] = new RegExp(reg, 'g'));
 }
 
 
