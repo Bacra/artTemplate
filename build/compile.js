@@ -13,7 +13,7 @@ function generateWrapSource(wrapSource) {
 		case 'sea':
 		case 'seajs':
 			return function(data) {
-				return 'define(){module.exports = '+data+'}';
+				return 'define(function(require, exports, module){module.exports = '+data+'})';
 			};
 		case 'node':
 		case 'nodejs':
