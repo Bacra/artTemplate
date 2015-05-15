@@ -44,7 +44,9 @@ var compile = template.compile = function (source, options) {
 			e.filename = filename || 'anonymous';
 			e.name = 'Syntax Error';
 
-			return showDebugInfo(e);
+            var func = showDebugInfo(e);
+            func.toString = function() {return compile.toString.call(func)};
+			return func;
 
 		}
 	}
